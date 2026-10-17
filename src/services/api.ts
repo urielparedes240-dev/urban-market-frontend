@@ -2,7 +2,9 @@ import axios, { type AxiosInstance, type InternalAxiosRequestConfig, type AxiosR
 
 // Cliente Axios configurado para ERP Minimarkets Multi-Sede
 const apiClient: AxiosInstance = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:3000/api',
+  baseURL:
+    import.meta.env.VITE_API_URL ||
+    (import.meta.env.DEV ? 'http://localhost:3000/api' : 'https://urban-market-backend-2izk.onrender.com'),
   timeout: 12000,
   headers: {
     'Content-Type': 'application/json',
