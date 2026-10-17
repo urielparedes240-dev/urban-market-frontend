@@ -4,7 +4,7 @@ import axios, { type AxiosInstance, type InternalAxiosRequestConfig, type AxiosR
 const apiClient: AxiosInstance = axios.create({
   baseURL:
     import.meta.env.VITE_API_URL ||
-    (import.meta.env.DEV ? 'http://localhost:3000/api' : 'https://urban-market-backend-2izk.onrender.com'),
+    (import.meta.env.DEV ? 'http://localhost:3000/api' : 'https://urban-market-backend-2izk.onrender.com/api'),
   timeout: 12000,
   headers: {
     'Content-Type': 'application/json',

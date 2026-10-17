@@ -56,7 +56,7 @@ export const usePosStore = defineStore('pos', () => {
   }) {
     try {
       // Hacemos el POST al servidor en Node.js
-      const response = await apiClient.post('/caja/apertura', {
+      const response = await apiClient.post('caja/apertura', {
         initial_amount: payload.initialCash,
         turn: payload.turn
       });
@@ -198,7 +198,7 @@ export const usePosStore = defineStore('pos', () => {
       };
 
       // Disparamos la petición HTTP usando Axios
-      const response = await apiClient.post('/pos/venta', payload);
+      const response = await apiClient.post('pos/venta', payload);
       const dbSale = response.data.venta;
 
       // Mapeamos la respuesta real de la base de datos a tu tipo del frontend
