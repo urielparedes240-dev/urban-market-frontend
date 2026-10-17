@@ -41,63 +41,41 @@ const routes: RouteRecordRaw[] = [
           return pos.isShiftOpen ? '/pos' : '/caja/apertura';
         }
       },
-      // 1. Caja y Turnos (Apertura y Cierre)
       {
         path: 'caja/apertura',
         name: 'caja-apertura',
         component: AperturaCaja,
-        meta: {
-          title: 'Apertura y Cierre de Caja'
-        }
+        meta: { title: 'Apertura y Cierre de Caja' }
       },
-      // 2. Punto de Venta (POS) - Solo accesible si la caja está abierta
       {
         path: 'pos',
         name: 'pos',
         component: POS,
-        meta: {
-          requiresOpenShift: true,
-          title: 'Punto de Venta Rápido (POS)'
-        }
+        meta: { requiresOpenShift: true, title: 'Punto de Venta Rápido (POS)' }
       },
-      // 3. Dashboard Global (Admin)
       {
         path: 'dashboard',
         name: 'dashboard',
         component: DashboardGlobal,
-        meta: {
-          requiresAdmin: true,
-          title: 'Dashboard Global de Cadena'
-        }
+        meta: { requiresAdmin: true, title: 'Dashboard Global de Cadena' }
       },
-      // 4. Inventario Multisede (Admin & Consultas)
       {
         path: 'inventario',
         name: 'inventario',
         component: InventarioMultisede,
-        meta: {
-          title: 'Inventario Multi-Sede'
-        }
+        meta: { title: 'Inventario Multi-Sede' }
       },
-      // 5. RRHH y Planillas (Admin)
       {
         path: 'rrhh',
         name: 'rrhh',
         component: RrhhView,
-        meta: {
-          requiresAdmin: true,
-          title: 'Recursos Humanos y Turnos'
-        }
+        meta: { requiresAdmin: true, title: 'Recursos Humanos y Turnos' }
       },
-      // 6. Contabilidad y SUNAT (Admin)
       {
         path: 'contabilidad',
         name: 'contabilidad',
         component: ContabilidadSunat,
-        meta: {
-          requiresAdmin: true,
-          title: 'Facturación Electrónica SUNAT'
-        }
+        meta: { requiresAdmin: true, title: 'Facturación Electrónica SUNAT' }
       }
     ]
   },
@@ -115,26 +93,24 @@ const router = createRouter({
   }
 });
 
-// ROUTE GUARDS: Protección estricta de Roles y Estado de Caja
-router.beforeEach((to, _from, next) => {
+// ROUTE GUARDS: Protección estricta de Roles y Estado de Caja (Corregido)
+router.beforeEach((to, _from) => {
   const authStore = useAuthStore();
   const posStore = usePosStore();
   const toastStore = useToastStore();
 
   // 1. Verificar si requiere autenticación
   if (!to.meta.public && !authStore.isAuthenticated) {
-    next('/login');
-    return;
+    return '/login';
   }
 
   // 2. Si ya está autenticado e intenta ir a /login
   if (to.name === 'login' && authStore.isAuthenticated) {
     if (authStore.isAdmin) {
-      next('/dashboard');
+      return '/dashboard';
     } else {
-      next(posStore.isShiftOpen ? '/pos' : '/caja/apertura');
+      return posStore.isShiftOpen ? '/pos' : '/caja/apertura';
     }
-    return;
   }
 
   // 3. Protección de áreas administrativas frente a cajeros/trabajadores
@@ -143,34 +119,29 @@ router.beforeEach((to, _from, next) => {
       'Módulo Restringido',
       'Esta sección administrativa está reservada para Gerencia General y Supervisores de cadena.'
     );
-    next(posStore.isShiftOpen ? '/pos' : '/caja/apertura');
-    return;
+    return posStore.isShiftOpen ? '/pos' : '/caja/apertura';
   }
 
   // 4. Protección del POS: Bloqueado si la caja está cerrada
   if (to.meta.requiresOpenShift) {
-    // Si un Admin intenta entrar al POS, notificarle que su rol es de supervisión
     if (authStore.isAdmin) {
       toastStore.info(
         'Modo Supervisión',
         'El perfil Administrador supervisa las tiendas. Cambia al rol Trabajador (Cajero) para emitir ventas en el POS.'
       );
-      next('/dashboard');
-      return;
+      return '/dashboard';
     }
 
-    // Para el cajero: si la caja NO está abierta, bloquear acceso al POS
     if (!posStore.isShiftOpen) {
       toastStore.warning(
         'Caja Cerrada (POS Bloqueado)',
         'Debes registrar el monto inicial y dar clic en "Abrir Caja / Iniciar Turno" para poder vender.'
       );
-      next('/caja/apertura');
-      return;
+      return '/caja/apertura';
     }
   }
 
-  next();
+  return true; // Reemplaza a next() para permitir la navegación
 });
 
 export default router;

@@ -18,7 +18,7 @@ export const useAuthStore = defineStore('auth', () => {
   async function login(email: string, password_hash: string) {
     try {
       // Hacemos el POST a la API de Node (usamos la misma clave password_hash de tu backend)
-      const response = await apiClient.post('/auth/login', { email, password_hash });
+      const response = await apiClient.post('/auth/login', { email, password: password_hash });
       
       const apiUser = response.data.user;
       const jwt = response.data.token;

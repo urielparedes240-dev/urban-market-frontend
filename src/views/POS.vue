@@ -90,11 +90,10 @@
       </router-link>
     </div>
 
-    <!-- CUERPO PRINCIPAL DEL POS: CATÁLOGO IZQUIERDA + TICKET DERECHA -->
+    <!-- CUERPO PRINCIPAL DEL POS -->
     <div v-else class="flex-1 flex overflow-hidden">
-      <!-- PANEL IZQUIERDO: CATÁLOGO TÁCTIL RÁPIDO (65% ANCHO) -->
+      <!-- PANEL IZQUIERDO -->
       <div class="flex-1 flex flex-col overflow-hidden bg-slate-50 border-r border-slate-200">
-        <!-- Barra de Categorías con Botones Grandes Táctiles -->
         <div class="bg-white border-b border-slate-200 px-4 py-2 flex items-center gap-2 overflow-x-auto shrink-0 shadow-xs">
           <button
             @click="selectedCategory = 'all'"
@@ -114,7 +113,6 @@
           </button>
         </div>
 
-        <!-- Grid de Productos con Botones Grandes Táctiles -->
         <div class="flex-1 overflow-y-auto p-4">
           <div 
             v-if="filteredProducts.length === 0" 
@@ -131,7 +129,6 @@
               @click="handleProductClick(prod)"
               class="bg-white hover:bg-emerald-50/50 border border-slate-200 hover:border-retail-400 rounded-xl p-2.5 text-left flex flex-col justify-between shadow-xs hover:shadow-md transition-all group cursor-pointer relative overflow-hidden active:scale-95"
             >
-              <!-- Badge de Stock en esta Sede -->
               <span 
                 class="absolute top-2 right-2 px-1.5 py-0.5 rounded text-[10px] font-bold"
                 :class="getStockBadgeClass(prod)"
@@ -139,7 +136,6 @@
                 {{ getBranchStock(prod) }} {{ prod.unit }}
               </span>
 
-              <!-- Imagen de Producto -->
               <div class="h-24 w-full flex items-center justify-center overflow-hidden rounded-lg bg-slate-100 mb-2">
                 <img 
                   :src="prod.image" 
@@ -149,7 +145,6 @@
                 />
               </div>
 
-              <!-- Info de Producto -->
               <div class="space-y-0.5">
                 <span class="text-[10px] text-slate-400 font-mono">{{ prod.sku }}</span>
                 <p class="text-xs font-bold text-slate-800 line-clamp-2 leading-tight">
@@ -158,7 +153,6 @@
                 <p class="text-[10px] text-slate-500">{{ prod.brand }}</p>
               </div>
 
-              <!-- Precio Grande -->
               <div class="mt-2 pt-2 border-t border-slate-100 flex items-center justify-between">
                 <span class="text-xs font-semibold text-slate-400">PVP</span>
                 <span class="text-base font-extrabold text-retail-700 font-mono">
@@ -169,7 +163,6 @@
           </div>
         </div>
 
-        <!-- Accesos rápidos / Teclado inferior -->
         <div class="bg-white border-t border-slate-200 px-4 py-2 flex items-center justify-between text-xs text-slate-500">
           <div class="flex items-center gap-3">
             <span class="flex items-center gap-1">
@@ -185,9 +178,8 @@
         </div>
       </div>
 
-      <!-- PANEL DERECHO: CARRITO / TICKET DE VENTA (35% ANCHO) -->
+      <!-- PANEL DERECHO: CARRITO -->
       <div class="w-80 sm:w-96 lg:w-[420px] bg-white flex flex-col justify-between border-l border-slate-200 shadow-lg shrink-0">
-        <!-- Header del Carrito -->
         <div class="p-3 bg-slate-900 text-white flex items-center justify-between shrink-0">
           <div class="flex items-center gap-2">
             <ShoppingCartIcon class="w-5 h-5 text-retail-400" />
@@ -206,7 +198,6 @@
           </button>
         </div>
 
-        <!-- Tipo de Comprobante (Boleta / Factura) -->
         <div class="bg-slate-100 p-2.5 border-b border-slate-200 space-y-2 shrink-0">
           <div class="grid grid-cols-2 gap-2 text-xs">
             <button
@@ -227,7 +218,6 @@
             </button>
           </div>
 
-          <!-- Campos de cliente según tipo de comprobante -->
           <div class="flex gap-2 text-xs">
             <input
               v-if="invoiceType === 'boleta'"
@@ -254,7 +244,6 @@
           </div>
         </div>
 
-        <!-- Lista de Productos en el Carrito (Scrollable) -->
         <div class="flex-1 overflow-y-auto p-3 divide-y divide-slate-100">
           <div 
             v-if="posStore.cart.length === 0" 
@@ -279,7 +268,6 @@
               </div>
             </div>
 
-            <!-- Controles de Cantidad Grandes y Táctiles -->
             <div class="flex items-center gap-1.5 shrink-0">
               <button
                 @click="posStore.updateQuantity(item.product.id, item.quantity - 1)"
@@ -298,14 +286,12 @@
               </button>
             </div>
 
-            <!-- Subtotal Item -->
             <div class="text-right shrink-0 min-w-[65px]">
               <span class="font-mono font-bold text-xs text-slate-900">
                 S/ {{ item.subtotal.toFixed(2) }}
               </span>
             </div>
 
-            <!-- Botón Eliminar -->
             <button
               @click="posStore.removeFromCart(item.product.id)"
               class="text-slate-300 hover:text-rose-500 p-1 transition"
@@ -315,7 +301,6 @@
           </div>
         </div>
 
-        <!-- TOTALES Y BOTÓN DE COBRO -->
         <div class="bg-slate-50 border-t border-slate-200 p-4 space-y-3 shrink-0">
           <div class="space-y-1 text-xs text-slate-600">
             <div class="flex justify-between">
@@ -332,7 +317,6 @@
             </div>
           </div>
 
-          <!-- Total a Pagar Grande -->
           <div class="bg-slate-900 text-white p-3.5 rounded-xl flex items-center justify-between shadow-md">
             <div>
               <span class="text-[10px] text-slate-400 uppercase tracking-wider font-semibold">Total a Cobrar</span>
@@ -345,7 +329,6 @@
             </div>
           </div>
 
-          <!-- Botones de Método de Cobro Directo -->
           <div class="grid grid-cols-3 gap-2 pt-1">
             <button
               @click="abrirModalCobro('efectivo')"
@@ -378,7 +361,7 @@
       </div>
     </div>
 
-    <!-- MODAL DE COBRO (EFECTIVO CON VUELTO / TARJETA / YAPE) -->
+    <!-- MODAL DE COBRO -->
     <div v-if="showPaymentModal" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 p-4">
       <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl space-y-4">
         <div class="flex items-center justify-between border-b border-slate-100 pb-3">
@@ -405,7 +388,6 @@
           </button>
         </div>
 
-        <!-- Resumen de monto -->
         <div class="bg-slate-900 text-white p-4 rounded-xl flex items-center justify-between">
           <span class="text-xs text-slate-400">Total a Pagar:</span>
           <span class="text-2xl font-black font-mono text-emerald-400">
@@ -413,7 +395,6 @@
           </span>
         </div>
 
-        <!-- Si es Efectivo: Ingreso y Cálculo de Vuelto -->
         <div v-if="selectedPaymentMethod === 'efectivo'" class="space-y-3">
           <div>
             <label class="block text-xs font-semibold text-slate-700 mb-1">Monto Entregado por el Cliente</label>
@@ -431,7 +412,6 @@
             </div>
           </div>
 
-          <!-- Billetes rápidos -->
           <div class="grid grid-cols-4 gap-2">
             <button
               v-for="billete in [posStore.cartTotal, 20, 50, 100]"
@@ -444,7 +424,6 @@
             </button>
           </div>
 
-          <!-- Vuelto Calculado -->
           <div 
             class="p-3 rounded-xl border flex items-center justify-between"
             :class="vueltoCalculado >= 0 ? 'bg-emerald-50 border-emerald-200 text-emerald-900' : 'bg-rose-50 border-rose-200 text-rose-900'"
@@ -458,7 +437,6 @@
           </div>
         </div>
 
-        <!-- Si es Tarjeta: Confirmación de POS Izipay / Niubiz -->
         <div v-else-if="selectedPaymentMethod === 'tarjeta'" class="space-y-3 bg-blue-50/60 p-4 rounded-xl border border-blue-200 text-xs">
           <p class="font-semibold text-blue-900">Operación con Terminal POS (Visa / Mastercard / Amex):</p>
           <p class="text-blue-700 leading-relaxed">
@@ -472,7 +450,6 @@
           </div>
         </div>
 
-        <!-- Si es Yape / Plin: Confirmación de Pago Móvil -->
         <div v-else class="space-y-3 bg-purple-50/60 p-4 rounded-xl border border-purple-200 text-xs">
           <div class="text-center space-y-1">
             <p class="font-bold text-purple-900 text-sm">Escanee el QR en el mostrador</p>
@@ -490,22 +467,22 @@
           </div>
         </div>
 
-        <!-- Botón Final de Emisión -->
         <div class="pt-2">
           <button
             type="button"
             @click="confirmarVenta"
-            :disabled="selectedPaymentMethod === 'efectivo' && vueltoCalculado < 0"
+            :disabled="isProcessing || (selectedPaymentMethod === 'efectivo' && vueltoCalculado < 0)"
             class="w-full bg-retail-600 hover:bg-retail-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold py-3.5 rounded-xl shadow-md transition flex items-center justify-center gap-2 text-sm focus:ring-4 focus:ring-retail-500/30"
           >
-            <CheckCircleIcon class="w-5 h-5" />
-            <span>Emitir Comprobante y Finalizar Venta</span>
+            <CheckCircleIcon v-if="!isProcessing" class="w-5 h-5" />
+            <span class="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" v-else></span>
+            <span>{{ isProcessing ? 'Procesando en Servidor...' : 'Emitir Comprobante y Finalizar Venta' }}</span>
           </button>
         </div>
       </div>
     </div>
 
-    <!-- MODAL DE TICKET EXITOSO / COMPROBANTE SUNAT EMITIDO -->
+    <!-- MODAL DE TICKET EXITOSO -->
     <div v-if="showSuccessTicketModal && posStore.lastSale" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 p-4">
       <div class="bg-white rounded-2xl max-w-sm w-full p-6 shadow-2xl space-y-4 font-mono text-xs">
         <div class="text-center border-b border-dashed border-slate-300 pb-3 space-y-1">
@@ -530,7 +507,6 @@
           </div>
         </div>
 
-        <!-- Detalle de productos -->
         <div class="border-b border-dashed border-slate-300 pb-3 space-y-1 max-h-36 overflow-y-auto">
           <div v-for="it in posStore.lastSale.items" :key="it.productId" class="flex justify-between text-[11px]">
             <span class="truncate pr-2">{{ it.quantity }}x {{ it.productName }}</span>
@@ -538,7 +514,6 @@
           </div>
         </div>
 
-        <!-- Totales -->
         <div class="space-y-1 text-slate-800 text-[11px] border-b border-dashed border-slate-300 pb-3">
           <div class="flex justify-between"><span>Subtotal:</span><span>S/ {{ posStore.lastSale.subtotal.toFixed(2) }}</span></div>
           <div class="flex justify-between"><span>IGV 18%:</span><span>S/ {{ posStore.lastSale.igv.toFixed(2) }}</span></div>
@@ -607,13 +582,12 @@ const toastStore = useToastStore();
 const barcodeInput = ref<HTMLInputElement | null>(null);
 const searchQuery = ref<string>('');
 const selectedCategory = ref<string>('all');
+const isProcessing = ref<boolean>(false);
 
-// Formulario de emisión de comprobante
 const invoiceType = ref<InvoiceType>('boleta');
 const clientDocNumber = ref<string>('');
 const clientName = ref<string>('');
 
-// Modal de cobro
 const showPaymentModal = ref<boolean>(false);
 const selectedPaymentMethod = ref<PaymentMethod>('efectivo');
 const amountPaid = ref<number>(0);
@@ -622,22 +596,13 @@ const yapeCode = ref<string>('');
 const showSuccessTicketModal = ref<boolean>(false);
 
 const categoriasDisponibles: ProductCategory[] = [
-  'Bebidas',
-  'Abarrotes',
-  'Snacks',
-  'Lácteos',
-  'Panadería',
-  'Golosinas',
-  'Limpieza'
+  'Bebidas', 'Abarrotes', 'Snacks', 'Lácteos', 'Panadería', 'Golosinas', 'Limpieza'
 ];
 
 onMounted(() => {
-  if (barcodeInput.value) {
-    barcodeInput.value.focus();
-  }
+  if (barcodeInput.value) barcodeInput.value.focus();
 });
 
-// Filtro de productos (solo productos activos que no han sido dados de baja)
 const filteredProducts = computed(() => {
   return inventoryStore.products.filter(p => {
     if (p.status === 'de_baja') return false;
@@ -689,7 +654,6 @@ function handleBarcodeEnter() {
   }
 }
 
-// Modal de Cobro
 function abrirModalCobro(method: PaymentMethod) {
   selectedPaymentMethod.value = method;
   amountPaid.value = posStore.cartTotal;
@@ -714,7 +678,8 @@ function getPaymentMethodName(method: PaymentMethod) {
   return 'Yape o Plin';
 }
 
-function confirmarVenta() {
+// LÓGICA DE COBRO ASÍNCRONA (Conectada al Backend Real)
+async function confirmarVenta() {
   if (invoiceType.value === 'factura' && !clientDocNumber.value) {
     toastStore.warning('Dato Requerido', 'Para emitir Factura es obligatorio ingresar el RUC de 11 dígitos.');
     return;
@@ -723,7 +688,10 @@ function confirmarVenta() {
   const clientDocType = invoiceType.value === 'factura' ? 'RUC' : (clientDocNumber.value ? 'DNI' : 'SIN_DOC');
 
   try {
-    const sale = posStore.procesarVenta({
+    isProcessing.value = true;
+
+    // Llamamos al store esperando la respuesta de Node.js
+    const sale = await posStore.procesarVenta({
       paymentMethod: selectedPaymentMethod.value,
       amountPaid: amountPaid.value,
       invoiceType: invoiceType.value,
@@ -743,6 +711,8 @@ function confirmarVenta() {
     );
   } catch (err: any) {
     toastStore.error('Error al Cobrar', err.message);
+  } finally {
+    isProcessing.value = false;
   }
 }
 

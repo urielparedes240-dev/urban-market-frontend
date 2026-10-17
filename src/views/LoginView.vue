@@ -16,43 +16,41 @@
         </p>
       </div>
 
-      <!-- Conmutador Rápido de Perfiles (Demo & Testing) -->
+      <!-- Conmutador Rápido de Perfiles (Demo & Testing) adaptado a API real -->
       <div class="bg-slate-900/80 p-3.5 rounded-xl border border-slate-800 space-y-2.5">
         <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">
-          Acceso Rápido por Rol (Simulación):
+          Autocompletado Rápido para Pruebas:
         </span>
         <div class="grid grid-cols-1 gap-2.5 text-xs">
           <button
             type="button"
-            @click="selectDemoUser(DEMO_RETAIL_USERS[1])"
+            @click="selectDemoUser('jorge.quispe@urbamarket.pe')"
             class="flex items-center justify-between p-3 rounded-xl border-2 text-left transition-all cursor-pointer shadow-xs"
-            :class="selectedUser.id === DEMO_RETAIL_USERS[1].id ? 'bg-retail-950/80 border-retail-500 text-white ring-2 ring-retail-500/40' : 'bg-slate-800/80 border-slate-700 hover:border-slate-500 text-slate-300 hover:bg-slate-800 hover:text-white'"
+            :class="email === 'jorge.quispe@urbamarket.pe' ? 'bg-retail-950/80 border-retail-500 text-white ring-2 ring-retail-500/40' : 'bg-slate-800/80 border-slate-700 hover:border-slate-500 text-slate-300 hover:bg-slate-800 hover:text-white'"
           >
             <div>
-              <span class="font-extrabold block text-white text-xs">{{ DEMO_RETAIL_USERS[1].name }}</span>
-              <span class="text-[10px] text-emerald-400 font-mono">DNI: {{ DEMO_RETAIL_USERS[1].dni }}</span>
-              <span class="text-[10px] text-slate-400 block mt-0.5">Sede Miraflores • Requiere Apertura de Turno</span>
+              <span class="font-extrabold block text-white text-xs">Jorge Quispe (Cajero)</span>
+              <span class="text-[10px] text-emerald-400 font-mono">jorge.quispe@urbamarket.pe</span>
             </div>
             <span class="px-2.5 py-1 rounded-md text-[10px] font-black bg-retail-600 text-white shadow-xs">Trabajador</span>
           </button>
 
           <button
             type="button"
-            @click="selectDemoUser(DEMO_RETAIL_USERS[0])"
+            @click="selectDemoUser('gerencia@urbamarket.pe')"
             class="flex items-center justify-between p-3 rounded-xl border-2 text-left transition-all cursor-pointer shadow-xs"
-            :class="selectedUser.id === DEMO_RETAIL_USERS[0].id ? 'bg-blue-950/80 border-blue-500 text-white ring-2 ring-blue-500/40' : 'bg-slate-800/80 border-slate-700 hover:border-slate-500 text-slate-300 hover:bg-slate-800 hover:text-white'"
+            :class="email === 'gerencia@urbamarket.pe' ? 'bg-blue-950/80 border-blue-500 text-white ring-2 ring-blue-500/40' : 'bg-slate-800/80 border-slate-700 hover:border-slate-500 text-slate-300 hover:bg-slate-800 hover:text-white'"
           >
             <div>
-              <span class="font-extrabold block text-white text-xs">{{ DEMO_RETAIL_USERS[0].name }}</span>
-              <span class="text-[10px] text-blue-400 font-mono">DNI: {{ DEMO_RETAIL_USERS[0].dni }}</span>
-              <span class="text-[10px] text-slate-400 block mt-0.5">Gerencia General • Auditoría Global Multisede</span>
+              <span class="font-extrabold block text-white text-xs">Carlos Mendoza (Admin)</span>
+              <span class="text-[10px] text-blue-400 font-mono">gerencia@urbamarket.pe</span>
             </div>
             <span class="px-2.5 py-1 rounded-md text-[10px] font-black bg-blue-600 text-white shadow-xs">Admin</span>
           </button>
         </div>
       </div>
 
-      <!-- Formulario de Acceso -->
+      <!-- Formulario de Acceso Real -->
       <form @submit.prevent="handleLogin" class="space-y-4">
         <div>
           <label class="block text-xs font-semibold text-slate-300 mb-1">Correo Corporativo</label>
@@ -76,9 +74,10 @@
 
         <button
           type="submit"
-          class="w-full bg-retail-600 hover:bg-retail-700 text-white font-bold py-3 rounded-xl shadow-lg transition text-sm cursor-pointer"
+          :disabled="isLoading"
+          class="w-full bg-retail-600 hover:bg-retail-700 disabled:opacity-50 text-white font-bold py-3 rounded-xl shadow-lg transition text-sm cursor-pointer"
         >
-          Ingresar al Sistema
+          {{ isLoading ? 'Validando credenciales...' : 'Ingresar al Sistema' }}
         </button>
       </form>
 
@@ -92,38 +91,49 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
-import { useAuthStore, DEMO_RETAIL_USERS } from '../stores/authStore';
+import { useAuthStore } from '../stores/authStore';
 import { usePosStore } from '../stores/posStore';
 import { useToastStore } from '../stores/toastStore';
-import type { User } from '../types';
 
 const router = useRouter();
 const authStore = useAuthStore();
 const posStore = usePosStore();
 const toastStore = useToastStore();
 
-const selectedUser = ref<User>({ ...DEMO_RETAIL_USERS[1] });
-const email = ref<string>(selectedUser.value.email);
-const password = ref<string>('••••••••');
+const email = ref<string>('jorge.quispe@urbamarket.pe');
+const password = ref<string>('123456'); // La contraseña real de tu base de datos
+const isLoading = ref<boolean>(false);
 
-function selectDemoUser(user: User) {
-  selectedUser.value = { ...user };
-  email.value = user.email;
+function selectDemoUser(demoEmail: string) {
+  email.value = demoEmail;
+  password.value = '123456';
 }
 
-function handleLogin() {
-  authStore.login(selectedUser.value);
-  toastStore.success('Sesión Iniciada', `Bienvenido(a) ${selectedUser.value.name} (${selectedUser.value.roleTitle})`);
+async function handleLogin() {
+  try {
+    isLoading.value = true;
+    
+    // Llamada real al backend en Node
+    await authStore.login(email.value, password.value);
+    
+    // Si la promesa se resuelve correctamente, mostramos el toast
+    toastStore.success('Sesión Iniciada', `Bienvenido(a) ${authStore.currentUser?.name}`);
 
-  if (selectedUser.value.role === 'admin') {
-    router.push('/dashboard');
-  } else {
-    // Si la caja ya está abierta va a POS, sino a Apertura
-    if (posStore.isShiftOpen) {
-      router.push('/pos');
+    // Redirección por roles
+    if (authStore.isAdmin) {
+      router.push('/dashboard');
     } else {
-      router.push('/caja/apertura');
+      if (posStore.isShiftOpen) {
+        router.push('/pos');
+      } else {
+        router.push('/caja/apertura');
+      }
     }
+  } catch (error: any) {
+    // Si el backend rechaza la conexión, mostramos el error
+    toastStore.error('Error de Acceso', error.message || 'Credenciales inválidas');
+  } finally {
+    isLoading.value = false;
   }
 }
 </script>
